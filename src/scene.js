@@ -18,7 +18,7 @@ const cube = new THREE.Mesh( geometry, material );
 
 rtScene.add(cube);
 
-rtCamera.position.z = 100;
+rtCamera.position.z = 500;
 
 
 export const renderer = new THREE.WebGLRenderer();
@@ -35,7 +35,7 @@ composer.renderToScreen = false;
 const renderPass = new RenderPass( rtScene, rtCamera );
 composer.addPass( renderPass );
 const bokehValues = {
-    focus: 100,
+    focus: 500,
     aperture: .00025,
     maxblur: 1,
     width: window.innerWidth,
@@ -51,7 +51,7 @@ const scene = new THREE.Scene();
 camera.position.z = 100;
 
 
-// make a 512x512 plane geometry, a mesh that maps renderTarget.texture, and add it to the scene
+// make a plane geometry, a mesh that maps renderTarget.texture, and add it to the scene
 const planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
 const planeMaterial = new THREE.MeshBasicMaterial( { map: renderTarget.texture } );
 const plane = new THREE.Mesh( planeGeometry, planeMaterial );
@@ -82,8 +82,8 @@ export function animate() {
     renderer.setRenderTarget( renderTarget );
     composer.render(); // now composer has rendered to renderTarget
     renderer.setRenderTarget(null);
-    renderer.setClearColor( 0x000000, 1 );
-    renderer.render( scene, camera );
+    renderer.setClearColor( 0x141414, 1 );
+    // renderer.render( scene, camera );
     
     magnify3d.render({
         renderer: renderer,
@@ -99,7 +99,7 @@ export function animate() {
             }
             renderer.render(scene, camera);
         },
-        radius: window.innerWidth/6,
+        radius: window.innerWidth/5,
         exp: 150,
         zoom: state.magnification,
     });
