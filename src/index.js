@@ -9,13 +9,6 @@ import { CubicBezierCurve } from 'three';
 // sets Zoom Factor text
 document.querySelector('#zoomFactor').innerText = `Zoom Factor: ${state.magnification}x`;
 
-const geometry = new THREE.BoxGeometry( 10, 10, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-
-scene.add(cube);
-
-camera.position.z = 100;
 
 // animate function
 

@@ -1,4 +1,4 @@
-import {camera, renderer, bokehPass } from './scene';
+import {rtCamera, renderer, bokehPass } from './scene';
 
 export const state = {
         shift: false,

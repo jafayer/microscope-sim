@@ -6,9 +6,20 @@ import {state} from './controls';
 import Magnify3d from 'magnify-3d-new';
 
 const magnify3d = new Magnify3d();
-export const scene = new THREE.Scene();
-export const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000000000 );
-camera.enableZoom = true;
+
+
+const renderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight );
+export const rtScene = new THREE.Scene();
+export const rtCamera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000000000 );
+
+const geometry = new THREE.BoxGeometry( 10, 10, 1 );
+const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+const cube = new THREE.Mesh( geometry, material );
+
+rtScene.add(cube);
+
+rtCamera.position.z = 100;
+
 
 export const renderer = new THREE.WebGLRenderer();
 
@@ -18,24 +29,36 @@ document.body.appendChild( renderer.domElement );
 renderer.autoClear = true;
 
 // depth of field
-const renderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
 export const composer = new EffectComposer( renderer, renderTarget );
 composer.renderToScreen = false;
 
-const renderPass = new RenderPass( scene, camera );
+const renderPass = new RenderPass( rtScene, rtCamera );
 composer.addPass( renderPass );
 const bokehValues = {
     focus: 100,
-    aperture: 0.02,
-    maxblur: 10000,
+    aperture: .00025,
+    maxblur: 1,
     width: window.innerWidth,
     height: window.innerHeight
 }
 
-export const bokehPass = new BokehPass( scene, camera, bokehValues);
+export const bokehPass = new BokehPass( rtScene, rtCamera, bokehValues);
 composer.addPass( bokehPass );
-renderer.setRenderTarget(renderTarget);
-console.log(renderTarget);
+
+// create new camera and scene to house glass
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000000000 );
+const scene = new THREE.Scene();
+camera.position.z = 100;
+
+
+// make a 512x512 plane geometry, a mesh that maps renderTarget.texture, and add it to the scene
+const planeGeometry = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight );
+const planeMaterial = new THREE.MeshBasicMaterial( { map: renderTarget.texture } );
+const plane = new THREE.Mesh( planeGeometry, planeMaterial );
+scene.add( plane );
+
+renderer.set
+
 
 export function animate() {
 
@@ -55,10 +78,13 @@ export function animate() {
         camera.position.x += .01;
     }
 
-	requestAnimationFrame( animate );
-    composer.render();
-    console.log(`before`, renderTarget);
-
+    renderer.setClearColor( 0xffffff, 1 );
+    renderer.setRenderTarget( renderTarget );
+    composer.render(); // now composer has rendered to renderTarget
+    renderer.setRenderTarget(null);
+    renderer.setClearColor( 0x000000, 1 );
+    renderer.render( scene, camera );
+    
     magnify3d.render({
         renderer: renderer,
         pos: {
@@ -76,8 +102,7 @@ export function animate() {
         radius: window.innerWidth/6,
         exp: 150,
         zoom: state.magnification,
-        inputBuffer: renderTarget,
-        outputBuffer: renderTarget
     });
-
+    
+    requestAnimationFrame( animate );
 }
