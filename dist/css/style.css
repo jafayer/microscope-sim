@@ -1,0 +1,27 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #555;
+    background: #fff;
+}
+
+#zoomFactor {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+    color: #222;
+    z-index: 15;
+}
+
+#scope {
+    position: absolute;
+    top: 0;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+}
